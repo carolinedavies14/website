@@ -1,0 +1,334 @@
+---
+title: 'Project 2: Modeling, Testing, and Predicting'
+author: "Hunter Davies EID: hcd 362"
+date: '05/01/2020'
+output:
+  html_document:
+    toc: yes
+    toc_float:
+      collapsed: no
+      smooth_scroll: yes
+  word_document:
+    toc: yes
+---
+
+```{R}
+library(knitr)
+hook_output = knit_hooks$get('output')
+knit_hooks$set(output = function(x, options) {
+  # this hook is used only when the linewidth option is not NULL
+  if (!is.null(n <- options$linewidth)) {
+    x = knitr:::split_lines(x)
+    # any lines wider than n should be wrapped
+    if (any(nchar(x) > n)) x = strwrap(x, width = n)
+    x = paste(x, collapse = '\n')
+  }
+  hook_output(x, options)
+})
+
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE,fig.align="center",warning=FALSE,message=FALSE,fig.width=8, fig.height=5, linewidth=60)
+options(tibble.width = 100,width = 100)
+library(tidyverse)
+
+```
+
+*Your answer here*
+I choose a cardiovascular data set that contained 303 observations along with 17 variables. The variables analyzed were age (numeric), sex (binary), chest pain type (categorical including Asymptomatic, Angina, Abnormal Angina, and No Tang), blood pressure (numeric), cholesterol (numeric), Fasting blood sugar (binary= TRUE or FALSE), resting ecg (binary= Normal or Hyp), maximum heart rate (numeric), angina (binary= TRUE or FALSE), peak (numeric, slope (categorical including Flat, Up, or Down), colored vessels (numeric), thal (categorical including Rev, Normal, or Fix), and class (binary= Sick or Healthy). A key for these variables used in Rstudio can be found at the end of this document. 
+```{R}
+#MANOVA test
+
+library("readxl")
+cardio<-read_excel("cardio1.xlsx")
+man1<-manova(cbind(bp,chol,age, maxhr, peak, cvess)~cp, data=cardio)
+
+# mean diference across levels of categorical variable, chest pain type
+ 
+summary(man1)
+
+#Univariate ANOVAs
+summary(aov(bp~cp,data=cardio))
+summary(aov(chol~cp,data=cardio))
+summary(aov(age~cp,data=cardio))
+summary(aov(maxhr~cp,data=cardio))
+summary(aov(peak~cp,data=cardio))
+summary(aov(cvess~cp,data=cardio))
+
+#post-hoc t test
+
+pairwise.t.test(cardio$cvess, cardio$cp, p.adj = "none")
+pairwise.t.test(cardio$maxhr, cardio$cp, p.adj = "none")
+pairwise.t.test(cardio$peak, cardio$cp, p.adj = "none")
+```
+*Your answer here*
+I performed a MANOVA test using blood pressure, cholesterol, age, maximum heart rate, peak and colored vessels as my numeric and compared them to the categorical variable chest pain. That gave me a significant p-value of 4.89e-11 with a threshold of 0.05. Meaning at least one of those quantitative variables has a relation with the categorical variable, chest pain. Since you do not know which one need to perform a regular ANOVA, I ran six univariate ANOVAs to find a response for each showing a mean difference across groups. The ANOVA results are provided in the table below (table 1). 
+
+
+Table 1: ANOVA results
+
+	P-value
+Blood pressure (bp)	0.0344
+Cholesterol (chol)	0.604
+age	0.0186
+Maximum heart rate (maxhr)	1.15e-10
+peak	1.02e-08
+Colored vessels (cvess)	1.36e-05
+
+This gives a new threshold of 0.05/6= 0.00833. Furthermore, only maximum heart rate, peak, and colored vessels meet the threshold and were significant (highlighted in table 1). I then ran a post- hoc t test (table 2) (using pairwise t.test function) for each of those three numeric variables (each line of code is doing 6 separate pairwise test). Making the new threshold 0.00833/ 6= 0.00139. All the calculated thresholds were done by the Bonferroni correction. All three variables were significant meeting the threshold (highlighted in table 2). Assumptions for those three numeric variables were met when compared to the chest pain type., No tang.  Overall, one MANOVA was performed, six separate univariate ANOVAS were calculated, and three post hoc t test were performed to see which groups differed. 
+
+Table 2: Post-hoc Test
+	P-value (for No Tang chest pain type)
+Maximum heart rate (maxhr)	3.2e-07
+Colored vessels (cvess)	6.5e-05
+peak	9.9e-05
+
+
+```{R}
+
+#Randomization test
+
+measured_diff <- mean(cardio[cardio$sex=="Female",]$chol) - mean(cardio[cardio$sex=="Male",]$chol)
+mean_diffs <- vector()
+for(i in 1:5000){
+randomized <- data.frame(chol=sample(cardio$chol), sex=cardio$sex) 
+mean_diffs[i] <- mean(randomized[randomized$sex=="Female",]$chol) -
+                 mean(randomized[randomized$sex=="Male",]$chol)
+}
+mean(mean_diffs>abs(measured_diff) | mean_diffs< -abs(measured_diff))
+
+#Plot
+
+library(ggplot2)
+ggplot()+geom_histogram(aes(mean_diffs))+geom_vline(xintercept=measured_diff)
+```
+*Your answer here*
+Next a randomization test was performed comparing sex with cholesterol.
+
+Null: Sex and cholesterol have no relationship
+Alternative Hypothesis: There is a relationship between sex and cholesterol
+
+The test statistic calculated was a significant p-vale of 6e-04. Meaning the null hypothesis is rejected and there is a relationship between cholesterol and sex! I created a histogram conatining the null distribution with the test statistic mark. 
+
+
+```{R}
+#linear regression model and Mean center
+
+cardio$bp_c<- cardio$bp-mean(cardio$bp, na.rm= T)
+cardio$age_c<- cardio$age-mean(cardio$age, na.rm= T)
+cardio$chol_c<- cardio$chol-mean(cardio$chol, na.rm= T)
+inter<- lm(bp_c~age_c+chol_c, data=cardio)
+summary(inter)
+
+
+# PLOT
+
+qplot(x= bp, y= age_c, color= chol, data= cardio) + stat_smooth(method= "lm", se= FALSE, fullrange = TRUE)
+
+# Check Assumptions
+
+
+residuals<- inter$residuals; fitvalues<- inter$fitted.values
+ggplot() + geom_point(aes(fitvalues, residuals)) +geom_hline(yintercept = 0, col= "red")
+ggplot()+ geom_qq(aes(sample=residuals))+geom_qq_line(aes(sample= residuals, col= 'red'))
+
+```
+*Your answer here*
+Using a linear regression model and mean center for blood pressure, age, and cholesterol I predicted blood pressure from the numeric variables age and cholesterol. When interpreting the coefficient estimates I found the estimate for age was for every increase in age by one year, I excepted blood pressure to go up by 5.120e-01 on average. For cholesterol I found for every increase cholesterol, I excepted blood pressure to go up by 2.251e-02. The proportion of the variation in the outcome gave a multiple R-squared of 0.08226 and an adjusted R-squared of 0.07614. The two plots to check assumptions showed an unsuccessful fit indicting highly significant non-normality. 
+
+```{R}
+# Standard errors
+
+library(sandwich); library(lmtest)
+bptest(inter)
+summary(inter)$coef[,1:2]
+coeftest(inter, vcov = vcovHC(inter))[,1:2]
+summary(inter)
+
+
+# Boot starpping
+
+sample<- replicate(5000, {
+boot_dat<- sample_frac(cardio, replace= T)
+fit2<- lm(bp~age_c*chol, data= boot_dat)
+coef(fit2)
+})
+sample%>% t%>%as.data.frame%>%summarize_all(sd)
+
+bootse<-function(x,n=5000){
+  means<-vector()
+  for(i in 1:n){
+    means[i]<- mean(sample(x,replace=T))
+  }
+  return(sd(means))
+}
+
+mean_se<-cardio%>%group_by(bp)%>%summarize(mean=mean(chol),se=bootse(chol))
+mean_se %>% round(3)
+```
+*Your answer here*
+I then reran the same regression model with interaction with boot strap standard errors. When interpreting the coefficient estimates I found the estimate for age was for every increase in age by one year, I excepted blood pressure to go up by 0.48523 on average which was less originally. For cholesterol I found for every increase cholesterol, I excepted blood pressure to go up by 0.01827772 which was also less than before.
+
+```{R}
+#Perform a logistic regression predicting a binary categorical variable 
+
+data2<-cardio%>%mutate(y=ifelse(class=="Sick",1,0))
+head(data2)
+fit5<-glm(y~maxhr+peak,data=data2,family=binomial(link="logit"))
+library(lmtest)
+coeftest(fit5)
+
+#Confusion matrix
+class_diag <- function(probs,truth){
+  
+  #CONFUSION MATRIX: CALCULATE ACCURACY, TPR, TNR, PPV
+  tab<-table(factor(probs>.5,levels=c("FALSE","TRUE")),truth)
+  acc=sum(diag(tab))/sum(tab)
+  sens=tab[2,2]/colSums(tab)[2]
+  spec=tab[1,1]/colSums(tab)[1]
+  ppv=tab[2,2]/rowSums(tab)[2]
+
+  if(is.numeric(truth)==FALSE & is.logical(truth)==FALSE) truth<-as.numeric(truth)-1
+  
+  #CALCULATE EXACT AUC
+  ord<-order(probs, decreasing=TRUE)
+  probs <- probs[ord]; truth <- truth[ord]
+  
+  TPR=cumsum(truth)/max(1,sum(truth)) 
+  FPR=cumsum(!truth)/max(1,sum(!truth))
+  
+  dup<-c(probs[-1]>=probs[-length(probs)], FALSE)
+  TPR<-c(0,TPR[!dup],1); FPR<-c(0,FPR[!dup],1)
+  
+  n <- length(TPR)
+  auc<- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+
+  data.frame(acc,sens,spec,ppv,auc)
+}
+library(pROC)
+library(plotROC)
+probs1<-predict(fit5, newdata=data2, type="response")
+truth1<-data2$y 
+class_diag(probs1,truth1)
+table(prediction=as.numeric(probs1>.5), truth1)
+
+      
+#Compute and discuss the Accuracy, Sensitivity (TPR), Specificity (TNR), and Recall (PPV) 
+
+class_diag(probs1, truth1)
+
+
+#ggplot, plot density of log-odds (logit) by your binary outcome variable 
+
+data2$logit<-predict(fit5,type="link")
+
+data2%>%ggplot(aes(logit,color=class,fill=class))+geom_density(alpha=.4)+
+  theme(legend.position=c(.85,.85))+geom_vline(xintercept=0)+xlab("predictor (logit)")
+
+#Generate an ROC curve (plot) 
+
+data2$probs1<-predict(fit5, newdata=data2, type="response")
+
+sens<-function(p,data=data2, y=y) mean(data2[data2$y==1,]$probs1>p)
+spec<-function(p,data=data2, y=y) mean(data2[data2$y==0,]$probs1<p)
+sensitivity<-sapply(seq(0,1,.01),sens,data2)
+specificity<-sapply(seq(0,1,.01),spec,data2)
+ROC1<-data.frame(sensitivity,specificity,cutoff=seq(0,1,.01))
+ROC1%>%gather(key,rate,-cutoff)%>%ggplot(aes(cutoff,rate,color=key))+geom_path()+ geom_vline(xintercept=c(.1,.5,.9),lty=2,color="gray50")
+ROC1$TPR<-sensitivity
+ROC1$FPR<-1-specificity
+ROC1%>%ggplot(aes(FPR,TPR))+geom_path(size=1.5)+geom_segment(aes(x=0,y=0,xend=1,yend=1),lty=2)+scale_x_continuous(limits = c(0,1))
+                                                             
+
+
+#Perform 10-fold 
+k=10
+data <- data2 %>% sample_frac 
+folds <- ntile(1:nrow(data),n=10) 
+diags<-NULL
+for(i in 1:k){
+  train <- data[folds!=i,]
+  test <- data[folds==i,]
+  truth <- test$y 
+  fit <- glm(y~peak+maxhr, data=train, family="binomial")
+  probs <- predict(fit, newdata=test, type="response")
+  diags<-rbind(diags,class_diag(probs,truth))
+}
+summarize_all(diags,mean)
+
+```
+*Your answer here*
+I performed a logistic regression predicting a binary categorical variable, class (Healthy vs. Sick), from two explanatory variables including peak and maximum heart rate. When interpreting the coefficients, I found for every increase in maximum heart rate, by 1 I except the log odds of being Sick to decrease 0.0338747. For every increase in peak by 1 I expect the log odds of being Sick to increase by 0.7358198. 
+
+A confusion matrix was created (0= Healthy, 1=Sick). 30 individuals were incorrectly identified as sick and 89 were correctly identified as sick.  A 135 individuals were correctly identified as healthy and 49 individuals were incorrectly identified as healthy. I computed the Accuracy (0.7392739), Sensitivity (0.6449275), Specificity (0.8181818), and Recall (0.7478992). The AUC computed was 0.7943566 which was fair.
+
+I plotted the plot density of log-odds by my binary variable, class. When interrupting the ROC curve if we were predicting perfectly, TPR would be 1 while FPR would be 0 for any cutoff except 100%. A ROC curve shows the tradeoff between sensitivity and specificity (any increase in sensitivity will be accompanied by a decrease in specificity) and the closer the curve follows the left-hand border and then the top border of the ROC space, the more accurate the test. Moreover, our ROC curve was not close to the left-hand border showing less accuracy. The slope of the tangent line at a cut point gives the likelihood ratio (LR) for that value of the test. My curve LR is at 0.00 meaning less accuracy. 
+
+I ran a 10-fold CV and the average out-of-sample accuracy was 0.736129, the sensitivity was 0.649773, and the recall was 0.7437834. 
+
+
+
+```{R}
+
+#Lasso
+install.packages("glmnet") 
+library(glmnet)
+library(magrittr)
+library(dplyr)
+y<-as.matrix(cardio$class) 
+x<-model.matrix(class~.,data=cardio)[,-1] 
+head(x)
+x<-scale(x)
+cv<-cv.glmnet(x,y,family="binomial")
+
+lasso<-glmnet(x,y,family="binomial",lambda=cv$lambda.1se) 
+coef(lasso)
+
+
+
+#10 fold
+install.packages("magrittr") 
+install.packages("dplyr") 
+library(magrittr)
+library(dplyr)
+
+k=10
+cardio2 <- cardio %>% mutate(Male = ifelse(sex == "Male",1, 0)) %>% mutate(Asymptomatic = ifelse(cp == "Asymptomatic", 1, 0))%>% mutate(angt = ifelse(angina == "TRUE", 1, 0))%>% mutate(Flat = ifelse(slope == "Flat", 1, 0)) %>% mutate(Up = ifelse(slope == "Up", 1, 0))%>% mutate(Normal = ifelse(thal == "Normal", 1, 0))%>% mutate(Rev = ifelse(thal == "Rev", 1, 0))%>% select(class,Male, Asymptomatic, angt, Flat, Up, Normal, cvess, peak, maxhr)
+cardio2$y<- ifelse(cardio$class=="Sick",1, 0)
+
+data<- cardio2%>% sample_frac 
+folds<-ntile(1:nrow(data), n=10) 
+
+diags<-NULL
+for(i in 1:k){
+train<-data[folds!=i,]
+test<-data[folds==i,]
+truth<-test$y
+fit<-glm(y~Male+Asymptomatic+angt+Flat+Up+Normal+cvess+peak+maxhr,data= train, family= "binomial")
+
+probs<- predict(fit, newdata= test, type= "response")
+
+diags<-rbind(diags,class_diag(probs,truth))
+}
+
+summarize_all(diags,mean)
+diags%>% summarize_all(mean)
+```
+
+*Your answer here*
+For the LASSO regression the variable I choose to predict was class. The variables retained were sex (Male), chest pain type (Asymptomatic), maximum heart rate, angina (TRUE), peak, slope (FLAT and Up), colored vessels, and thal (Normal and Rev). Next I performed a 10 fold giving an accuracy of 0.8611828, sensitivity of 0.8051317, a Specificity of 0.9029355, and a Recall of 0.8916911. The AUC computed was 0.9136675 which was great! Which was a better AUC than previously!
+
+Key:
+Age= age
+Sex= sex
+Chest pain type= cp
+Blood pressure= bp
+Cholesterol= chol
+Fasting blood sugar= fastbs
+Resting ecg= Recg
+Maximum heart rate= maxhr
+Colored vessels= cvess
+Angina= angina
+Peak= peak
+Slope= slope
+Thal= thal
+Class= class
+

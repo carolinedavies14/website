@@ -1,0 +1,319 @@
+---
+title: "Comparing Brit Floyd and Billie Eilish Concert Tours 2020"
+author: "Hunter Davies(EID: hcd362)"
+date: "3/15/2020"
+output:
+  pdf_document: default
+  word_document: default
+  html_document: default
+---
+
+
+
+<pre class="r"><code>#Data sets
+
+library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ───────────────── tidyverse 1.3.0 ──</code></pre>
+<pre><code>## ✓ ggplot2 3.2.1     ✓ purrr   0.3.3
+## ✓ tibble  3.0.1     ✓ dplyr   0.8.5
+## ✓ tidyr   1.0.3     ✓ stringr 1.4.0
+## ✓ readr   1.3.1     ✓ forcats 0.5.0</code></pre>
+<pre><code>## ── Conflicts ──────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(&quot;readxl&quot;)
+floyd&lt;-read_excel(&quot;floyd.xlsx&quot;)
+billie &lt;- read_excel(&quot;billie.xlsx&quot;)
+
+library(ggplot2)
+head(floyd)</code></pre>
+<pre><code>## # A tibble: 6 x 7
+##   Dofweek Month  Date City       State Country Price
+##   &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt;
+## 1 Fri         3     6 Pittsburgh PA    USA        95
+## 2 Sat         3     7 Pittsburgh PA    USA        86
+## 3 Sun         3     8 Erie       PA    USA        93
+## 4 Tues        3    10 Providence RI    USA        58
+## 5 Wed         3    11 Worcester  MA    USA        61
+## 6 Fri         3    13 Kingston   NY    USA        50</code></pre>
+<pre class="r"><code>glimpse(floyd)</code></pre>
+<pre><code>## Rows: 54
+## Columns: 7
+## $ Dofweek &lt;chr&gt; &quot;Fri&quot;, &quot;Sat&quot;, &quot;Sun&quot;, &quot;Tues&quot;, &quot;Wed&quot;, &quot;Fri&quot;, &quot;Sat&quot;, &quot;Mon&quot;, &quot;Tue…
+## $ Month   &lt;dbl&gt; 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4…
+## $ Date    &lt;dbl&gt; 6, 7, 8, 10, 11, 13, 14, 16, 17, 18, 20, 21, 22, 24, 25, 26, …
+## $ City    &lt;chr&gt; &quot;Pittsburgh&quot;, &quot;Pittsburgh&quot;, &quot;Erie&quot;, &quot;Providence&quot;, &quot;Worcester&quot;…
+## $ State   &lt;chr&gt; &quot;PA&quot;, &quot;PA&quot;, &quot;PA&quot;, &quot;RI&quot;, &quot;MA&quot;, &quot;NY&quot;, &quot;CT&quot;, &quot;DC&quot;, &quot;PA&quot;, &quot;PA&quot;, &quot;…
+## $ Country &lt;chr&gt; &quot;USA&quot;, &quot;USA&quot;, &quot;USA&quot;, &quot;USA&quot;, &quot;USA&quot;, &quot;USA&quot;, &quot;USA&quot;, &quot;USA&quot;, &quot;USA&quot;…
+## $ Price   &lt;dbl&gt; 95.00, 86.00, 93.00, 58.00, 61.00, 50.00, 35.00, 44.00, 75.00…</code></pre>
+<pre class="r"><code>floyd &lt;- as.data.frame(floyd) 
+head(billie)</code></pre>
+<pre><code>## # A tibble: 6 x 7
+##   Dofweek Month  Date City         State Country Price
+##   &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt;
+## 1 Tues        3    10 Orlando      FL    USA       180
+## 2 Thurs       3    12 Raleigh      NC    USA       185
+## 3 Fri         3    13 Philadelphia PA    USA       215
+## 4 Sun         3    15 New York     NY    USA       230
+## 5 Mon         3    16 Newark       NJ    USA       170
+## 6 Wed         3    18 Washington   DC    USA       175</code></pre>
+<pre class="r"><code>billie &lt;- as.data.frame(billie) 
+glimpse(billie)</code></pre>
+<pre><code>## Rows: 50
+## Columns: 7
+## $ Dofweek &lt;chr&gt; &quot;Tues&quot;, &quot;Thurs&quot;, &quot;Fri&quot;, &quot;Sun&quot;, &quot;Mon&quot;, &quot;Wed&quot;, &quot;Thurs&quot;, &quot;Fri&quot;, …
+## $ Month   &lt;dbl&gt; 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4…
+## $ Date    &lt;dbl&gt; 10, 12, 13, 15, 16, 18, 19, 20, 23, 24, 25, 27, 28, 3, 4, 5, …
+## $ City    &lt;chr&gt; &quot;Orlando&quot;, &quot;Raleigh&quot;, &quot;Philadelphia&quot;, &quot;New York&quot;, &quot;Newark&quot;, &quot;…
+## $ State   &lt;chr&gt; &quot;FL&quot;, &quot;NC&quot;, &quot;PA&quot;, &quot;NY&quot;, &quot;NJ&quot;, &quot;DC&quot;, &quot;MA&quot;, &quot;NY&quot;, &quot;MI&quot;, &quot;IL&quot;, &quot;…
+## $ Country &lt;chr&gt; &quot;USA&quot;, &quot;USA&quot;, &quot;USA&quot;, &quot;USA&quot;, &quot;USA&quot;, &quot;USA&quot;, &quot;USA&quot;, &quot;USA&quot;, &quot;USA&quot;…
+## $ Price   &lt;dbl&gt; 180.00, 185.00, 215.00, 230.00, 170.00, 175.00, 278.00, 224.0…</code></pre>
+<p><em>Introduction: </em>
+My project entails a statistical comparison of 2020 concert tours of two musicians, Brit Floyd and Billie Eilish. I was interested in comparing the data of their tour dates, by day of week, month, date, their prices, and location (City, State, and Country). I obtained this data by looking through ticket websites such as Stubhub and transferring this data to an excel data sheet. Having a love for a wide varied of music, I choose this data out of pure curiosity. Brit Floyd and Billie Eilish are two artists who are categorized in different genres, progressive rock and alternative rock/pop respectively. Before analyzing the data through Rstudio I hypothesized that there would be no correlation with either musicians except for when comparing prices with month and date.</p>
+<p>Since I manually put my data in an excel, I used library (tidyverse) and library (“readxl”) along with uploading those variables by creating function for each (known as “Floyd” and “billie”).</p>
+<pre class="r"><code>#Joining
+Billiefloydfulljoin2&lt;-inner_join(floyd, billie, by= c(&quot;Month&quot;, &quot;Date&quot;), suffix=c(&quot;floyd&quot;, &quot;billie&quot;))</code></pre>
+<p>I choose to do an inner join, of month and date, for my data set which returns all values from x where there are matching variables in y, and all columns from x and y. I would like to clarify that I named this join set as “Billiefloydfulljoin2.” Unfortunately, when I finished my analysis, I realized my join set named had “full join” in it when it should have said “Billiefloydinnerjoin2”, but I left it as is and decided to only address it in the summary. When doing an inner join, the data condensed to 20 observations and 12 variables. I decided not to drop any NAs since my data sets were predicted to have little correlation to begin with and I did not want to lose any extra data that would be important and interesting to analyze.</p>
+<pre class="r"><code>#Wrangling
+filter1&lt;- filter(Billiefloydfulljoin2, Countryfloyd== &quot;USA&quot; &amp; Countrybillie== &quot;USA&quot;)
+nrow(filter1)</code></pre>
+<pre><code>## [1] 15</code></pre>
+<pre class="r"><code>pricesbyday &lt;- select(Billiefloydfulljoin2, Dofweekfloyd, Pricefloyd, Pricebillie)
+arrange(pricesbyday, Pricebillie)</code></pre>
+<pre><code>##    Dofweekfloyd Pricefloyd Pricebillie
+## 1           Sat      49.50       91.15
+## 2           Fri      54.00      120.00
+## 3           Mon      44.00      170.00
+## 4           Wed      50.00      175.00
+## 5          Tues      58.00      180.00
+## 6          Tues      24.00      184.00
+## 7           Fri      45.00      184.00
+## 8           Wed     100.00      185.00
+## 9           Sat      59.00      189.00
+## 10          Sat      59.00      190.00
+## 11          Sun      60.00      190.00
+## 12          Tue      61.00      190.65
+## 13          Wed      68.00      194.00
+## 14          Fri      61.73      210.00
+## 15          Fri      50.00      215.00
+## 16          Fri      59.00      219.00
+## 17          Fri      65.00      224.00
+## 18          Sun      97.00      233.95
+## 19         Tues      66.00      245.00
+## 20          Fri      63.00      329.70</code></pre>
+<pre class="r"><code>group_by(pricesbyday, Dofweekfloyd) %&gt;% summarise(Pricebillie = mean(Pricebillie))</code></pre>
+<pre><code>## # A tibble: 7 x 2
+##   Dofweekfloyd Pricebillie
+##   &lt;chr&gt;              &lt;dbl&gt;
+## 1 Fri                 215.
+## 2 Mon                 170 
+## 3 Sat                 157.
+## 4 Sun                 212.
+## 5 Tue                 191.
+## 6 Tues                203 
+## 7 Wed                 185.</code></pre>
+<pre class="r"><code>mutate(Billiefloydfulljoin2, priceratio = Pricebillie/Pricefloyd)</code></pre>
+<pre><code>##    Dofweekfloyd Month Date    Cityfloyd Statefloyd Countryfloyd Pricefloyd
+## 1          Tues     3   10   Providence         RI          USA      58.00
+## 2           Fri     3   13     Kingston         NY          USA      50.00
+## 3           Mon     3   16   Washington         DC          USA      44.00
+## 4           Wed     3   18      Hershey         PA          USA      50.00
+## 5           Fri     3   20    Bethlehem         PA          USA      65.00
+## 6          Tues     3   24 Indianapolis         IN          USA      24.00
+## 7           Wed     3   25   Louisville         KY          USA     100.00
+## 8           Fri     3   27        Akron         OH          USA      45.00
+## 9           Sat     3   28      Chicago         IL          USA      59.00
+## 10          Fri     4    3      Detroit         MI          USA      59.00
+## 11          Sat     4    4   Cincinnati         OH          USA      59.00
+## 12          Sun     4    5   Cincinnati         OH          USA      60.00
+## 13         Tues     4    7   South Bend         IN          USA      66.00
+## 14          Wed     4    8 Grand Rapids         MI          USA      68.00
+## 15          Fri     4   10     Hamilton         ON       Canada      61.73
+## 16          Fri     4   17       Boston         MA          USA      54.00
+## 17          Sat     5   30  Miami Beach         FL          USA      49.50
+## 18          Tue     6    2    Pensacola         FL          USA      61.00
+## 19          Fri     6    5      Atlanta         GA          USA      63.00
+## 20          Sun     6    7        Tulsa         OK          USA      97.00
+##    Dofweekbillie    Citybillie          Statebillie Countrybillie Pricebillie
+## 1           Tues       Orlando                   FL           USA      180.00
+## 2            Fri  Philadelphia                   PA           USA      215.00
+## 3            Mon        Newark                   NJ           USA      170.00
+## 4            Wed    Washington                   DC           USA      175.00
+## 5            Fri      Brooklyn                   NY           USA      224.00
+## 6           Tues       Chicago                   IL           USA      184.00
+## 7            Wed  Indianapolis                   IN           USA      185.00
+## 8            Fri     Nashville                   TN           USA      184.00
+## 9            Sat   Saint Louis                   MO           USA      190.00
+## 10           Fri     Inglewood                   CA           USA      219.00
+## 11           Sat     Inglewood                   CA           USA      189.00
+## 12           Sun     Inglewood                   CA           USA      190.00
+## 13          Tues San Francisco                   CA           USA      245.00
+## 14           Wed    Sacramento                   CA           USA      194.00
+## 15           Fri        Tacoma                   WA           USA      210.00
+## 16           Fri         Omaha                   NE           USA      120.00
+## 17           Sat     Sao Paulo                   SP            BR       91.15
+## 18          Tues   Tortuguitas         Buenos Aires            AR      190.65
+## 19           Fri      Santiago Region Metropolitana            CL      329.70
+## 20           Sun        Bogota               Bogota            CO      233.95
+##    priceratio
+## 1    3.103448
+## 2    4.300000
+## 3    3.863636
+## 4    3.500000
+## 5    3.446154
+## 6    7.666667
+## 7    1.850000
+## 8    4.088889
+## 9    3.220339
+## 10   3.711864
+## 11   3.203390
+## 12   3.166667
+## 13   3.712121
+## 14   2.852941
+## 15   3.401912
+## 16   2.222222
+## 17   1.841414
+## 18   3.125410
+## 19   5.233333
+## 20   2.411856</code></pre>
+<pre class="r"><code>select(Billiefloydfulljoin2, Month, Date, Pricefloyd, Pricebillie) %&gt;% summarise_all(list(mean=mean, sd=sd, var=var, min=min, max=max, n_distinct=n_distinct))</code></pre>
+<pre><code>##   Month_mean Date_mean Pricefloyd_mean Pricebillie_mean Month_sd  Date_sd
+## 1        3.9     13.95         59.6615         195.9725 1.071153 9.179353
+##   Pricefloyd_sd Pricebillie_sd Month_var Date_var Pricefloyd_var
+## 1      16.59891        47.1794  1.147368 84.26053       275.5238
+##   Pricebillie_var Month_min Date_min Pricefloyd_min Pricebillie_min Month_max
+## 1        2225.896         3        2             24           91.15         6
+##   Date_max Pricefloyd_max Pricebillie_max Month_n_distinct Date_n_distinct
+## 1       30            100           329.7                4              17
+##   Pricefloyd_n_distinct Pricebillie_n_distinct
+## 1                    17                     18</code></pre>
+<pre class="r"><code>summarize(Billiefloydfulljoin2, n())</code></pre>
+<pre><code>##   n()
+## 1  20</code></pre>
+<pre class="r"><code>cor(Billiefloydfulljoin2$Pricefloyd, Billiefloydfulljoin2$Pricebillie)</code></pre>
+<pre><code>## [1] 0.2976503</code></pre>
+<pre class="r"><code>quantile(Billiefloydfulljoin2$Month)</code></pre>
+<pre><code>##   0%  25%  50%  75% 100% 
+##    3    3    4    4    6</code></pre>
+<pre class="r"><code>quantile(Billiefloydfulljoin2$Date)</code></pre>
+<pre><code>##   0%  25%  50%  75% 100% 
+##  2.0  6.5 11.5 21.0 30.0</code></pre>
+<pre class="r"><code>quantile(Billiefloydfulljoin2$Pricefloyd)</code></pre>
+<pre><code>##    0%   25%   50%   75%  100% 
+##  24.0  50.0  59.0  63.5 100.0</code></pre>
+<pre class="r"><code>quantile(Billiefloydfulljoin2$Pricebillie)</code></pre>
+<pre><code>##     0%    25%    50%    75%   100% 
+##  91.15 183.00 190.00 216.00 329.70</code></pre>
+<pre class="r"><code>select(Billiefloydfulljoin2, Month, Date, Pricefloyd, Pricebillie) %&gt;% cor()</code></pre>
+<pre><code>##                  Month       Date Pricefloyd Pricebillie
+## Month        1.0000000 -0.5090535  0.3428548   0.2964984
+## Date        -0.5090535  1.0000000 -0.2463779  -0.5141159
+## Pricefloyd   0.3428548 -0.2463779  1.0000000   0.2976503
+## Pricebillie  0.2964984 -0.5141159  0.2976503   1.0000000</code></pre>
+<pre class="r"><code>grouped &lt;- select(Billiefloydfulljoin2, Dofweekfloyd, Month, Date, Pricebillie, Pricefloyd) %&gt;% group_by(Dofweekfloyd) %&gt;% summarize(Pricebillie = mean(Pricebillie), Pricefloyd = mean(Pricefloyd), Month = mean(Month), Date = mean(Date))
+select(grouped, Month, Date, Pricefloyd, Pricebillie) %&gt;% summarise_all(list(mean=mean, sd=sd, var=var, min=min, max=max, n_distinct=n_distinct))</code></pre>
+<pre><code>## # A tibble: 1 x 24
+##   Month_mean Date_mean Pricefloyd_mean Pricebillie_mean Month_sd Date_sd
+##        &lt;dbl&gt;     &lt;dbl&gt;           &lt;dbl&gt;            &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;
+## 1       4.07      12.7            59.7             190.     1.07    6.51
+## # … with 18 more variables: Pricefloyd_sd &lt;dbl&gt;, Pricebillie_sd &lt;dbl&gt;,
+## #   Month_var &lt;dbl&gt;, Date_var &lt;dbl&gt;, Pricefloyd_var &lt;dbl&gt;,
+## #   Pricebillie_var &lt;dbl&gt;, Month_min &lt;dbl&gt;, Date_min &lt;dbl&gt;,
+## #   Pricefloyd_min &lt;dbl&gt;, Pricebillie_min &lt;dbl&gt;, Month_max &lt;dbl&gt;,
+## #   Date_max &lt;dbl&gt;, Pricefloyd_max &lt;dbl&gt;, Pricebillie_max &lt;dbl&gt;,
+## #   Month_n_distinct &lt;int&gt;, Date_n_distinct &lt;int&gt;, Pricefloyd_n_distinct &lt;int&gt;,
+## #   Pricebillie_n_distinct &lt;int&gt;</code></pre>
+<pre class="r"><code>summarize(grouped, n())</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   `n()`
+##   &lt;int&gt;
+## 1     7</code></pre>
+<pre class="r"><code>cor(grouped$Pricefloyd, grouped$Pricebillie)</code></pre>
+<pre><code>## [1] 0.3672058</code></pre>
+<pre class="r"><code>quantile(grouped$Month)</code></pre>
+<pre><code>##       0%      25%      50%      75%     100% 
+## 3.000000 3.333333 3.857143 4.500000 6.000000</code></pre>
+<pre class="r"><code>quantile(grouped$Date)</code></pre>
+<pre><code>##        0%       25%       50%       75%      100% 
+##  2.000000  9.785714 13.666667 16.500000 20.666667</code></pre>
+<pre class="r"><code>quantile(grouped$Pricefloyd)</code></pre>
+<pre><code>##       0%      25%      50%      75%     100% 
+## 44.00000 52.58333 56.81857 66.83333 78.50000</code></pre>
+<pre class="r"><code>quantile(grouped$Pricebillie)</code></pre>
+<pre><code>##       0%      25%      50%      75%     100% 
+## 156.7167 177.3333 190.6500 207.4875 214.5286</code></pre>
+<pre class="r"><code>pivot_wider(Billiefloydfulljoin2, names_from = Dofweekfloyd, values_from = Countryfloyd)</code></pre>
+<pre><code>## # A tibble: 20 x 17
+##    Month  Date Cityfloyd Statefloyd Pricefloyd Dofweekbillie Citybillie
+##    &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;           &lt;dbl&gt; &lt;chr&gt;         &lt;chr&gt;     
+##  1     3    10 Providen… RI               58   Tues          Orlando   
+##  2     3    13 Kingston  NY               50   Fri           Philadelp…
+##  3     3    16 Washingt… DC               44   Mon           Newark    
+##  4     3    18 Hershey   PA               50   Wed           Washington
+##  5     3    20 Bethlehem PA               65   Fri           Brooklyn  
+##  6     3    24 Indianap… IN               24   Tues          Chicago   
+##  7     3    25 Louisvil… KY              100   Wed           Indianapo…
+##  8     3    27 Akron     OH               45   Fri           Nashville 
+##  9     3    28 Chicago   IL               59   Sat           Saint Lou…
+## 10     4     3 Detroit   MI               59   Fri           Inglewood 
+## 11     4     4 Cincinna… OH               59   Sat           Inglewood 
+## 12     4     5 Cincinna… OH               60   Sun           Inglewood 
+## 13     4     7 South Be… IN               66   Tues          San Franc…
+## 14     4     8 Grand Ra… MI               68   Wed           Sacramento
+## 15     4    10 Hamilton  ON               61.7 Fri           Tacoma    
+## 16     4    17 Boston    MA               54   Fri           Omaha     
+## 17     5    30 Miami Be… FL               49.5 Sat           Sao Paulo 
+## 18     6     2 Pensacola FL               61   Tues          Tortuguit…
+## 19     6     5 Atlanta   GA               63   Fri           Santiago  
+## 20     6     7 Tulsa     OK               97   Sun           Bogota    
+## # … with 10 more variables: Statebillie &lt;chr&gt;, Countrybillie &lt;chr&gt;,
+## #   Pricebillie &lt;dbl&gt;, Tues &lt;chr&gt;, Fri &lt;chr&gt;, Mon &lt;chr&gt;, Wed &lt;chr&gt;, Sat &lt;chr&gt;,
+## #   Sun &lt;chr&gt;, Tue &lt;chr&gt;</code></pre>
+<p>When using all six dplyr functions I found many interesting relationships and statistics between the two data sets. First, I used filter by filtering on USA concerts giving me 15 rows of data. Next I created a function called “pricesbyday” to analyze prices by day of week. And further used this new function to arrange the ticket prices of Billie Eilish in a decreasing order. I also used group by along with summarize to group the average days of the week and used mutate o generate a variable that is a function of at least one other variable giving the ticket price ratio of each musician. Select and summarize all were used to find the mean, standard deviation, variance, minimum, maximum, and n_distinct (efficiently count the number of unique values in a set of vectors). N() was used and gave an output of 20 meaning 20 groups or observations were being observed in Billiefloydfulljoin2. Using the correlation function of ticket prices of both musicians the output given was 0.2976503 which is considered a weak correlation. Quantile produces sample quantiles corresponding to the given probabilities and was used when comparing Billiefloydfulljoin2 to month, data, and ticket prices for each musician.
+The function Select of the inner join using month, data, and ticket prices of Brit Floyd gave an output of a correlation matrix where most outputs were less or equal 0.5 meaning the structure is weak and could be artificial. Next a new function was made using select of the inner join along with month, date, ticket prices, grouped by the day of week of Floyd, with a summarize function of the mean of ticket prices, date, and month (function labeled “grouped”). This function was used to find again the six dplyr functions and n(). Again, the correlation function was used with the new function “grouped” with comparing ticket prices and the output gave 0.3672058 which is once again a weak correlation. Quantile function was used in the same comparisons as stated in first paragraph with the exception of “grouped” instead of “Billiefloydfulljoin2.” Lastly, pivot_wider was used which increasing the number of columns and decreasing the number of rows.</p>
+<pre class="r"><code>#Visualizing
+library(reshape2)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;reshape2&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:tidyr&#39;:
+## 
+##     smiths</code></pre>
+<pre class="r"><code>library(ggplot2)
+cordata &lt;- select(Billiefloydfulljoin2, Month, Date, Pricefloyd, Pricebillie) %&gt;% cor()
+ggplot(data = melt(cordata), aes(x=Var1, y=Var2, fill=value)) + 
+  geom_tile()+ggtitle(&quot;Correlation Heatmap of Numeric Variables&quot;)</code></pre>
+<p><img src="/ProjectFINAL-2_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(Billiefloydfulljoin2, aes(x = Dofweekfloyd, y = Pricefloyd, fill=Dofweekfloyd))+ geom_bar(stat=&quot;summary&quot;,fun.y=&quot;mean&quot;)+ geom_errorbar(stat=&quot;summary&quot;, width= .5)+ theme(axis.text.x = element_text(angle=45, hjust=1), legend.position=&quot;none&quot;)+ggtitle(&quot;Day of Week vs. Ticket Price of Brit Floyd&quot;)+ ylab(&quot;Ticket Price ($)&quot;) + xlab(&quot;Day of Week&quot;)</code></pre>
+<pre><code>## No summary function supplied, defaulting to `mean_se()</code></pre>
+<pre><code>## Warning: Removed 2 rows containing missing values (geom_errorbar).</code></pre>
+<p><img src="/ProjectFINAL-2_files/figure-html/unnamed-chunk-5-2.png" width="672" /></p>
+<pre class="r"><code>Billiefloydfulljoin2 %&gt;% slice(1:3)</code></pre>
+<pre><code>##   Dofweekfloyd Month Date  Cityfloyd Statefloyd Countryfloyd Pricefloyd
+## 1         Tues     3   10 Providence         RI          USA         58
+## 2          Fri     3   13   Kingston         NY          USA         50
+## 3          Mon     3   16 Washington         DC          USA         44
+##   Dofweekbillie   Citybillie Statebillie Countrybillie Pricebillie
+## 1          Tues      Orlando          FL           USA         180
+## 2           Fri Philadelphia          PA           USA         215
+## 3           Mon       Newark          NJ           USA         170</code></pre>
+<pre class="r"><code>Billiefloydfulljoin2 %&gt;% ggplot()+geom_line(aes(Date, Pricefloyd, color=Month))+ geom_line(aes(Date, Pricebillie, color=Month)) + scale_color_gradient2(low = &quot;blue&quot;,mid=&quot;red&quot;,midpoint=6)+ggtitle(&quot;Date vs. Ticket Price of Brit Floyd by Month&quot;)+ ylab(&quot;Ticket Price ($)&quot;) + xlab(&quot;Date&quot;)</code></pre>
+<p><img src="/ProjectFINAL-2_files/figure-html/unnamed-chunk-5-3.png" width="672" />
+The heat map of the correlation matrix used numeric variables (month, data, and Prices of both artist). The bright values along the center diagonal simple show that variables perfectly correlate with themselves. The darker values off of the diagonal show that there were no strong correlations.
+The bar plot shows a graph analyzing the ticket prices per days of week with standard error bars. Error bars give a general idea of how precise a measurement is, or conversely, how far from the reported value the true (error free) value might be. The days Monday and Tuesday did not have standard error bars since there was not enough data to establish them. The bar plot shows that Sunday and Wednesday had the highest ticket prices along with the larger standard error bars and Monday and Tuesday with the lowest ticket prices. I would like to address the error in the graph where there are two Tuesday charted due to the Stubhub using “Tue” and “Tues” to address Tuesday. Small standard error bars were prevalent for Friday and Saturday.
+Using ggplot a double line graph was made to compare Ticket Prices vs. Date and colored by month for both artists with Billie Eilish representing the top line plotted and Brit Floyd representing the line below. Visually there appears to be a little correlation between ticket prices for Billie Eilish and ticket prices for Brit Floyd grouped by date. Heat map along curve and scattered by month. The month values are scattered around the plot. Ticket prices seem to be higher earlier in the month.</p>
+<pre class="r"><code>#Dimentionality Reduction
+PCAdata &lt;- select(Billiefloydfulljoin2, Month, Date, Pricefloyd, Pricebillie) %&gt;% prcomp
+select(Billiefloydfulljoin2, Month, Date, Pricefloyd, Pricebillie) %&gt;% prcomp</code></pre>
+<pre><code>## Standard deviations (1, .., p=4):
+## [1] 47.7145579 15.7732905  7.7821598  0.8887185
+## 
+## Rotation (n x k) = (4 x 4):
+##                      PC1         PC2         PC3           PC4
+## Month       -0.007043151  0.01809989 -0.05228517  0.9984433129
+## Date         0.102337681 -0.05928584  0.99152730  0.0537196439
+## Pricefloyd  -0.117004052  0.99039663  0.07210734 -0.0150033590
+## Pricebillie -0.987819541 -0.12358034  0.09455371  0.0002235331</code></pre>
+<pre class="r"><code>pcadf &lt;- data.frame(PC1=PCAdata$x[, 1], PC2=PCAdata$x[, 2])
+ggplot(pcadf, aes(PC1, PC2)) + geom_point()+ ggtitle(&quot;PC1 vs. PC2&quot;)</code></pre>
+<p><img src="/ProjectFINAL-2_files/figure-html/unnamed-chunk-6-1.png" width="672" />
+When selecting the data, analyzing month, data, and price of both Billie Floyd we found the principle components, four linear combinations that are uncorrelated. Each component consisted almost exclusively of a single variable indicating that they were uncorrelated to begin with. A plot was made from PC1 and PC2 from the extracted data (called= pcadata) showing the uncorrelated data points (linear taken out because what PC does). There were a few extreme points around the edges of the cluster. I determined that the PCA components were largely composed of individual variables. PC1 is composed almost entirely of price billie. PC2 is composed almost entirely of price Floyd. Plot will look basically the same as plotting he prices against each other and most around same price and with some are cheaper/more expensive. Only have one cluster that’s why we choose not to do clustering.</p>

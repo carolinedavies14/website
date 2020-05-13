@@ -1,0 +1,113 @@
+---
+title: "Comparing Brit Floyd and Billie Eilish Concert Tours 2020"
+author: "Hunter Davies(EID: hcd362)"
+date: "3/15/2020"
+output:
+  pdf_document: default
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#Data sets
+library(tidyverse)
+library("readxl")
+floyd<-read_excel("floyd.xlsx")
+billie <- read_excel("~/billie.xlsx")
+
+library(ggplot2)
+head(floyd)
+glimpse(floyd)
+floyd <- as.data.frame(floyd) 
+head(billie)
+billie <- as.data.frame(billie) 
+glimpse(billie)
+
+```
+
+*Introduction: *
+My project entails a statistical comparison of 2020 concert tours of two musicians, Brit Floyd and Billie Eilish. I was interested in comparing the data of their tour dates, by day of week, month, date, their prices, and location (City, State, and Country). I obtained this data by looking through ticket websites such as Stubhub and transferring this data to an excel data sheet. Having a love for a wide varied of music, I choose this data out of pure curiosity. Brit Floyd and Billie Eilish are two artists who are categorized in different genres, progressive rock and alternative rock/pop respectively. Before analyzing the data through Rstudio I hypothesized that there would be no correlation with either musicians except for when comparing prices with month and date. 
+
+```{R}
+
+```
+Since I manually put my data in an excel, I used library (tidyverse) and library (“readxl”) along with uploading those variables by creating function for each (known as “Floyd” and “billie”). 
+
+
+
+
+```{R}
+#Joining
+Billiefloydfulljoin2<-inner_join(floyd, billie, by= c("Month", "Date"), suffix=c("floyd", "billie"))
+
+```
+I choose to do an inner join, of month and date, for my data set which returns all values from x where there are matching variables in y, and all columns from x and y. I would like to clarify that I named this join set as “Billiefloydfulljoin2.” Unfortunately, when I finished my analysis, I realized my join set named had “full join” in it when it should have said “Billiefloydinnerjoin2”, but I left it as is and decided to only address it in the summary. When doing an inner join, the data condensed to 20 observations and 12 variables. I decided not to drop any NAs since my data sets were predicted to have little correlation to begin with and I did not want to lose any extra data that would be important and interesting to analyze. 
+
+
+```{r}
+#Wrangling
+filter1<- filter(Billiefloydfulljoin2, Countryfloyd== "USA" & Countrybillie== "USA")
+nrow(filter1)
+pricesbyday <- select(Billiefloydfulljoin2, Dofweekfloyd, Pricefloyd, Pricebillie)
+arrange(pricesbyday, Pricebillie)
+group_by(pricesbyday, Dofweekfloyd) %>% summarise(Pricebillie = mean(Pricebillie))
+mutate(Billiefloydfulljoin2, priceratio = Pricebillie/Pricefloyd)
+
+
+select(Billiefloydfulljoin2, Month, Date, Pricefloyd, Pricebillie) %>% summarise_all(list(mean=mean, sd=sd, var=var, min=min, max=max, n_distinct=n_distinct))
+summarize(Billiefloydfulljoin2, n())
+cor(Billiefloydfulljoin2$Pricefloyd, Billiefloydfulljoin2$Pricebillie)
+quantile(Billiefloydfulljoin2$Month)
+quantile(Billiefloydfulljoin2$Date)
+quantile(Billiefloydfulljoin2$Pricefloyd)
+quantile(Billiefloydfulljoin2$Pricebillie)
+select(Billiefloydfulljoin2, Month, Date, Pricefloyd, Pricebillie) %>% cor()
+
+grouped <- select(Billiefloydfulljoin2, Dofweekfloyd, Month, Date, Pricebillie, Pricefloyd) %>% group_by(Dofweekfloyd) %>% summarize(Pricebillie = mean(Pricebillie), Pricefloyd = mean(Pricefloyd), Month = mean(Month), Date = mean(Date))
+select(grouped, Month, Date, Pricefloyd, Pricebillie) %>% summarise_all(list(mean=mean, sd=sd, var=var, min=min, max=max, n_distinct=n_distinct))
+summarize(grouped, n())
+cor(grouped$Pricefloyd, grouped$Pricebillie)
+quantile(grouped$Month)
+quantile(grouped$Date)
+quantile(grouped$Pricefloyd)
+quantile(grouped$Pricebillie)
+
+pivot_wider(Billiefloydfulljoin2, names_from = Dofweekfloyd, values_from = Countryfloyd)
+
+```
+When using all six dplyr functions I found many interesting relationships and statistics between the two data sets. First, I used filter by filtering on USA concerts giving me 15 rows of data. Next I created a function called “pricesbyday” to analyze prices by day of week. And further used this new function to arrange the ticket prices of Billie Eilish in a decreasing order. I also used group by along with summarize to group the average days of the week and used mutate o generate a variable that is a function of at least one other variable giving the ticket price ratio of each musician. Select and summarize all were used to find the mean, standard deviation, variance, minimum, maximum, and n_distinct (efficiently count the number of unique values in a set of vectors). N() was used and gave an output of 20 meaning 20 groups or observations were being observed in Billiefloydfulljoin2. Using the correlation function of ticket prices of both musicians the output given was 0.2976503 which is considered a weak correlation. Quantile produces sample quantiles corresponding to the given probabilities and was used when comparing Billiefloydfulljoin2 to month, data, and ticket prices for each musician. 
+	The function Select of the inner join using month, data, and ticket prices of Brit Floyd gave an output of a correlation matrix where most outputs were less or equal 0.5 meaning the structure is weak and could be artificial. Next a new function was made using select of the inner join along with month, date, ticket prices, grouped by the day of week of Floyd, with a summarize function of the mean of ticket prices, date, and month (function labeled “grouped”). This function was used to find again the six dplyr functions and n(). Again, the correlation function was used with the new function “grouped” with comparing ticket prices and the output gave 0.3672058 which is once again a weak correlation. Quantile function was used in the same comparisons as stated in first paragraph with the exception of “grouped” instead of “Billiefloydfulljoin2.” Lastly, pivot_wider was used which increasing the number of columns and decreasing the number of rows. 
+
+```{r}
+#Visualizing
+library(reshape2)
+library(ggplot2)
+cordata <- select(Billiefloydfulljoin2, Month, Date, Pricefloyd, Pricebillie) %>% cor()
+ggplot(data = melt(cordata), aes(x=Var1, y=Var2, fill=value)) + 
+  geom_tile()+ggtitle("Correlation Heatmap of Numeric Variables")
+
+ggplot(Billiefloydfulljoin2, aes(x = Dofweekfloyd, y = Pricefloyd, fill=Dofweekfloyd))+ geom_bar(stat="summary",fun.y="mean")+ geom_errorbar(stat="summary", width= .5)+ theme(axis.text.x = element_text(angle=45, hjust=1), legend.position="none")+ggtitle("Day of Week vs. Ticket Price of Brit Floyd")+ ylab("Ticket Price ($)") + xlab("Day of Week")
+
+Billiefloydfulljoin2 %>% slice(1:3)
+Billiefloydfulljoin2 %>% ggplot()+geom_line(aes(Date, Pricefloyd, color=Month))+ geom_line(aes(Date, Pricebillie, color=Month)) + scale_color_gradient2(low = "blue",mid="red",midpoint=6)+ggtitle("Date vs. Ticket Price of Brit Floyd by Month")+ ylab("Ticket Price ($)") + xlab("Date")
+
+```
+The heat map of the correlation matrix used numeric variables (month, data, and Prices of both artist). The bright values along the center diagonal simple show that variables perfectly correlate with themselves. The darker values off of the diagonal show that there were no strong correlations. 
+The bar plot shows a graph analyzing the ticket prices per days of week with standard error bars. Error bars give a general idea of how precise a measurement is, or conversely, how far from the reported value the true (error free) value might be. The days Monday and Tuesday did not have standard error bars since there was not enough data to establish them. The bar plot shows that Sunday and Wednesday had the highest ticket prices along with the larger standard error bars and Monday and Tuesday with the lowest ticket prices. I would like to address the error in the graph where there are two Tuesday charted due to the Stubhub using “Tue” and “Tues” to address Tuesday. Small standard error bars were prevalent for Friday and Saturday. 
+Using ggplot a double line graph was made to compare Ticket Prices vs. Date and colored by month for both artists with Billie Eilish representing the top line plotted and Brit Floyd representing the line below. Visually there appears to be a little correlation between ticket prices for Billie Eilish and ticket prices for Brit Floyd grouped by date. Heat map along curve and scattered by month. The month values are scattered around the plot. Ticket prices seem to be higher earlier in the month. 
+
+```{r}
+#Dimentionality Reduction
+PCAdata <- select(Billiefloydfulljoin2, Month, Date, Pricefloyd, Pricebillie) %>% prcomp
+select(Billiefloydfulljoin2, Month, Date, Pricefloyd, Pricebillie) %>% prcomp
+pcadf <- data.frame(PC1=PCAdata$x[, 1], PC2=PCAdata$x[, 2])
+ggplot(pcadf, aes(PC1, PC2)) + geom_point()+ ggtitle("PC1 vs. PC2")
+
+
+```
+When selecting the data, analyzing month, data, and price of both Billie Floyd we found the principle components, four linear combinations that are uncorrelated. Each component consisted almost exclusively of a single variable indicating that they were uncorrelated to begin with.  A plot was made from PC1 and PC2 from the extracted data (called= pcadata) showing the uncorrelated data points (linear taken out because what PC does). There were a few extreme points around the edges of the cluster. I determined that the PCA components were largely composed of individual variables. PC1 is composed almost entirely of price billie. PC2 is composed almost entirely of price Floyd. Plot will look basically the same as plotting he prices against each other and most around same price and with some are cheaper/more expensive. Only have one cluster that’s why we choose not to do clustering. 
+```{R}

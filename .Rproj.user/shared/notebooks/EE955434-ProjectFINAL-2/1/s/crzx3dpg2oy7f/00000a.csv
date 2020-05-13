@@ -1,0 +1,5 @@
+"0","floyd<-read_excel(""floyd.xlsx"")
+"
+"2","Error in loadNamespace(i, c(lib.loc, .libPaths()), versionCheck = vI[[i]]) : 
+  namespace ‘rlang’ 0.4.2 is already loaded, but >= 0.4.3 is required
+"

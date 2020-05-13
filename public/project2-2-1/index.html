@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Hunter Davies (EID: hcd362)" />
+    <meta name="description" content="Describe your website">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+    <title>Project 2: Modeling, Testing, and Predicting</title>
+    <meta name="generator" content="Hugo 0.70.0" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/css/main.css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,200bold,400old" />
+    
+    <!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+    
+  </head>
+
+  <body>
+    <div id="wrap">
+
+      
+      <nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/"><i class="fa fa-home"></i></a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+        <li><a href="/blog/">BLOG</a></li>
+        
+        <li><a href="/projects/">PROJECTS</a></li>
+        
+        <li><a href="/resume/">RESUME</a></li>
+        
+      
+      </ul>
+    </div>
+  </div>
+</nav>
+
+      
+      <div class="container">
+        <div class="blog-post">
+          <h3>
+            <strong><a href="/project2-2-1/">Project 2: Modeling, Testing, and Predicting</a></strong>
+          </h3>
+        </div>
+        <div class="blog-title">
+          <h4>
+          January 1, 0001
+            &nbsp;&nbsp;
+            
+          </h4>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="blogpost">
+              
+
+
+<pre class="r"><code>library(knitr)
+hook_output = knit_hooks$get(&#39;output&#39;)
+knit_hooks$set(output = function(x, options) {
+  # this hook is used only when the linewidth option is not NULL
+  if (!is.null(n &lt;- options$linewidth)) {
+    x = knitr:::split_lines(x)
+    # any lines wider than n should be wrapped
+    if (any(nchar(x) &gt; n)) x = strwrap(x, width = n)
+    x = paste(x, collapse = &#39;\n&#39;)
+  }
+  hook_output(x, options)
+})
+
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE,fig.align=&quot;center&quot;,warning=FALSE,message=FALSE,fig.width=8, fig.height=5, linewidth=60)
+options(tibble.width = 100,width = 100)
+library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ───────────────── tidyverse 1.3.0 ──</code></pre>
+<pre><code>## ✓ ggplot2 3.2.1     ✓ purrr   0.3.3
+## ✓ tibble  3.0.1     ✓ dplyr   0.8.5
+## ✓ tidyr   1.0.3     ✓ stringr 1.4.0
+## ✓ readr   1.3.1     ✓ forcats 0.5.0</code></pre>
+<pre><code>## ── Conflicts ──────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<p><em>Your answer here</em>
+I choose a cardiovascular data set that contained 303 observations along with 17 variables. The variables analyzed were age (numeric), sex (binary), chest pain type (categorical including Asymptomatic, Angina, Abnormal Angina, and No Tang), blood pressure (numeric), cholesterol (numeric), Fasting blood sugar (binary= TRUE or FALSE), resting ecg (binary= Normal or Hyp), maximum heart rate (numeric), angina (binary= TRUE or FALSE), peak (numeric, slope (categorical including Flat, Up, or Down), colored vessels (numeric), thal (categorical including Rev, Normal, or Fix), and class (binary= Sick or Healthy). A key for these variables used in Rstudio can be found at the end of this document.</p>
+<pre class="r"><code>#MANOVA test
+
+library(&quot;readxl&quot;)
+cardio&lt;-read_excel(&quot;cardio1.xlsx&quot;)
+man1&lt;-manova(cbind(bp,chol,age, maxhr, peak, cvess)~cp, data=cardio)
+
+# mean diference across levels of categorical variable, chest pain type
+ 
+summary(man1)</code></pre>
+<pre><code>## Df Pillai approx F num Df den Df Pr(&gt;F)
+## cp 3 0.27837 5.0459 18 888 4.489e-11 ***
+## Residuals 299
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code>#Univariate ANOVAs
+summary(aov(bp~cp,data=cardio))</code></pre>
+<pre><code>## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## cp 3 2643 881.0 2.919 0.0344 *
+## Residuals 299 90248 301.8
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code>summary(aov(chol~cp,data=cardio))</code></pre>
+<pre><code>##              Df Sum Sq Mean Sq F value Pr(&gt;F)
+## cp            3   5001    1667   0.618  0.604
+## Residuals   299 806300    2697</code></pre>
+<pre class="r"><code>summary(aov(age~cp,data=cardio))</code></pre>
+<pre><code>## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## cp 3 818 272.67 3.384 0.0186 *
+## Residuals 299 24092 80.58
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code>summary(aov(maxhr~cp,data=cardio))</code></pre>
+<pre><code>## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## cp 3 24030 8010 17.82 1.15e-10 ***
+## Residuals 299 134413 450
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code>summary(aov(peak~cp,data=cardio))</code></pre>
+<pre><code>## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## cp 3 51.0 17.000 14.27 1.02e-08 ***
+## Residuals 299 356.1 1.191
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code>summary(aov(cvess~cp,data=cardio))</code></pre>
+<pre><code>## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## cp 3 21.3 7.102 8.773 1.36e-05 ***
+## Residuals 299 242.0 0.809
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code>#post-hoc t test
+
+pairwise.t.test(cardio$cvess, cardio$cp, p.adj = &quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  cardio$cvess and cardio$cp 
+## 
+##              Abnormal Angina Angina Asymptomatic
+## Angina       0.542           -      -           
+## Asymptomatic 5.6e-05         0.022  -           
+## NoTang       0.498           0.887  6.5e-05     
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(cardio$maxhr, cardio$cp, p.adj = &quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  cardio$maxhr and cardio$cp 
+## 
+##              Abnormal Angina Angina Asymptomatic
+## Angina       0.2273          -      -           
+## Asymptomatic 1.2e-09         0.0013 -           
+## NoTang       0.0713          0.9443 3.2e-07     
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(cardio$peak, cardio$cp, p.adj = &quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  cardio$peak and cardio$cp 
+## 
+##              Abnormal Angina Angina  Asymptomatic
+## Angina       0.00011         -       -           
+## Asymptomatic 7.4e-09         0.97371 -           
+## NoTang       0.01342         0.02102 9.9e-05     
+## 
+## P value adjustment method: none</code></pre>
+<p><em>Your answer here</em>
+I performed a MANOVA test using blood pressure, cholesterol, age, maximum heart rate, peak and colored vessels as my numeric and compared them to the categorical variable chest pain. That gave me a significant p-value of 4.89e-11 with a threshold of 0.05. Meaning at least one of those quantitative variables has a relation with the categorical variable, chest pain. Since you do not know which one need to perform a regular ANOVA, I ran six univariate ANOVAs to find a response for each showing a mean difference across groups. The ANOVA results are provided in the table below (table 1).</p>
+<p>Table 1: ANOVA results</p>
+<pre><code>P-value</code></pre>
+<p>Blood pressure (bp) 0.0344
+Cholesterol (chol) 0.604
+age 0.0186
+Maximum heart rate (maxhr) 1.15e-10
+peak 1.02e-08
+Colored vessels (cvess) 1.36e-05</p>
+<p>This gives a new threshold of 0.05/6= 0.00833. Furthermore, only maximum heart rate, peak, and colored vessels meet the threshold and were significant (highlighted in table 1). I then ran a post- hoc t test (table 2) (using pairwise t.test function) for each of those three numeric variables (each line of code is doing 6 separate pairwise test). Making the new threshold 0.00833/ 6= 0.00139. All the calculated thresholds were done by the Bonferroni correction. All three variables were significant meeting the threshold (highlighted in table 2). Assumptions for those three numeric variables were met when compared to the chest pain type., No tang. Overall, one MANOVA was performed, six separate univariate ANOVAS were calculated, and three post hoc t test were performed to see which groups differed.</p>
+<p>Table 2: Post-hoc Test
+P-value (for No Tang chest pain type)
+Maximum heart rate (maxhr) 3.2e-07
+Colored vessels (cvess) 6.5e-05
+peak 9.9e-05</p>
+<pre class="r"><code>#Randomization test
+
+measured_diff &lt;- mean(cardio[cardio$sex==&quot;Female&quot;,]$chol) - mean(cardio[cardio$sex==&quot;Male&quot;,]$chol)
+mean_diffs &lt;- vector()
+for(i in 1:5000){
+randomized &lt;- data.frame(chol=sample(cardio$chol), sex=cardio$sex) 
+mean_diffs[i] &lt;- mean(randomized[randomized$sex==&quot;Female&quot;,]$chol) -
+                 mean(randomized[randomized$sex==&quot;Male&quot;,]$chol)
+}
+mean(mean_diffs&gt;abs(measured_diff) | mean_diffs&lt; -abs(measured_diff))</code></pre>
+<pre><code>## [1] 6e-04</code></pre>
+<pre class="r"><code>#Plot
+
+library(ggplot2)
+ggplot()+geom_histogram(aes(mean_diffs))+geom_vline(xintercept=measured_diff)</code></pre>
+<p><img src="/Project2-2-1_files/figure-html/unnamed-chunk-3-1.png" width="768" style="display: block; margin: auto;" />
+<em>Your answer here</em>
+Next a randomization test was performed comparing sex with cholesterol.</p>
+<p>Null: Sex and cholesterol have no relationship
+Alternative Hypothesis: There is a relationship between sex and cholesterol</p>
+<p>The test statistic calculated was a significant p-vale of 6e-04. Meaning the null hypothesis is rejected and there is a relationship between cholesterol and sex! I created a histogram conatining the null distribution with the test statistic mark.</p>
+<pre class="r"><code>#linear regression model and Mean center
+
+cardio$bp_c&lt;- cardio$bp-mean(cardio$bp, na.rm= T)
+cardio$age_c&lt;- cardio$age-mean(cardio$age, na.rm= T)
+cardio$chol_c&lt;- cardio$chol-mean(cardio$chol, na.rm= T)
+inter&lt;- lm(bp_c~age_c+chol_c, data=cardio)
+summary(inter)</code></pre>
+<pre><code>##
+## Call:
+## lm(formula = bp_c ~ age_c + chol_c, data = cardio)
+##
+## Residuals:
+## Min 1Q Median 3Q Max
+## -39.279 -11.297 -1.173 9.471 66.600
+##
+## Coefficients:
+## Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept) -1.210e-14 9.684e-01 0.000 1.000
+## age_c 5.120e-01 1.093e-01 4.683 4.29e-06 ***
+## chol_c 2.251e-02 1.916e-02 1.175 0.241
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## Residual standard error: 16.86 on 300 degrees of freedom
+## Multiple R-squared: 0.08226, Adjusted R-squared: 0.07614
+## F-statistic: 13.44 on 2 and 300 DF, p-value: 2.558e-06</code></pre>
+<pre class="r"><code># PLOT
+
+qplot(x= bp, y= age_c, color= chol, data= cardio) + stat_smooth(method= &quot;lm&quot;, se= FALSE, fullrange = TRUE)</code></pre>
+<p><img src="/Project2-2-1_files/figure-html/unnamed-chunk-4-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Check Assumptions
+
+
+residuals&lt;- inter$residuals; fitvalues&lt;- inter$fitted.values
+ggplot() + geom_point(aes(fitvalues, residuals)) +geom_hline(yintercept = 0, col= &quot;red&quot;)</code></pre>
+<p><img src="/Project2-2-1_files/figure-html/unnamed-chunk-4-2.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot()+ geom_qq(aes(sample=residuals))+geom_qq_line(aes(sample= residuals, col= &#39;red&#39;))</code></pre>
+<p><img src="/Project2-2-1_files/figure-html/unnamed-chunk-4-3.png" width="768" style="display: block; margin: auto;" />
+<em>Your answer here</em>
+Using a linear regression model and mean center for blood pressure, age, and cholesterol I predicted blood pressure from the numeric variables age and cholesterol. When interpreting the coefficient estimates I found the estimate for age was for every increase in age by one year, I excepted blood pressure to go up by 5.120e-01 on average. For cholesterol I found for every increase cholesterol, I excepted blood pressure to go up by 2.251e-02. The proportion of the variation in the outcome gave a multiple R-squared of 0.08226 and an adjusted R-squared of 0.07614. The two plots to check assumptions showed an unsuccessful fit indicting highly significant non-normality.</p>
+<pre class="r"><code># Standard errors
+
+library(sandwich); library(lmtest)
+bptest(inter)</code></pre>
+<pre><code>## 
+##  studentized Breusch-Pagan test
+## 
+## data:  inter
+## BP = 9.6701, df = 2, p-value = 0.007946</code></pre>
+<pre class="r"><code>summary(inter)$coef[,1:2]</code></pre>
+<pre><code>##                  Estimate Std. Error
+## (Intercept) -1.209931e-14  0.9684228
+## age_c        5.119972e-01  0.1093313
+## chol_c       2.250869e-02  0.0191577</code></pre>
+<pre class="r"><code>coeftest(inter, vcov = vcovHC(inter))[,1:2]</code></pre>
+<pre><code>##                  Estimate Std. Error
+## (Intercept) -1.209931e-14 0.97369639
+## age_c        5.119972e-01 0.10294754
+## chol_c       2.250869e-02 0.02155381</code></pre>
+<pre class="r"><code>summary(inter)</code></pre>
+<pre><code>##
+## Call:
+## lm(formula = bp_c ~ age_c + chol_c, data = cardio)
+##
+## Residuals:
+## Min 1Q Median 3Q Max
+## -39.279 -11.297 -1.173 9.471 66.600
+##
+## Coefficients:
+## Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept) -1.210e-14 9.684e-01 0.000 1.000
+## age_c 5.120e-01 1.093e-01 4.683 4.29e-06 ***
+## chol_c 2.251e-02 1.916e-02 1.175 0.241
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## Residual standard error: 16.86 on 300 degrees of freedom
+## Multiple R-squared: 0.08226, Adjusted R-squared: 0.07614
+## F-statistic: 13.44 on 2 and 300 DF, p-value: 2.558e-06</code></pre>
+<pre class="r"><code># Boot starpping
+
+sample&lt;- replicate(5000, {
+boot_dat&lt;- sample_frac(cardio, replace= T)
+fit2&lt;- lm(bp~age_c*chol, data= boot_dat)
+coef(fit2)
+})
+sample%&gt;% t%&gt;%as.data.frame%&gt;%summarize_all(sd)</code></pre>
+<pre><code>##   (Intercept)     age_c       chol  age_c:chol
+## 1    4.480547 0.4900564 0.01815572 0.002005603</code></pre>
+<pre class="r"><code>bootse&lt;-function(x,n=5000){
+  means&lt;-vector()
+  for(i in 1:n){
+    means[i]&lt;- mean(sample(x,replace=T))
+  }
+  return(sd(means))
+}
+
+mean_se&lt;-cardio%&gt;%group_by(bp)%&gt;%summarize(mean=mean(chol),se=bootse(chol))
+mean_se %&gt;% round(3)</code></pre>
+<pre><code>## # A tibble: 49 x 3
+##       bp  mean    se
+##    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1    94  213   9.95
+##  2   100  251. 14.6 
+##  3   101  197   4.05
+##  4   102  292. 18.8 
+##  5   104  208   4.13
+##  6   105  214  10.7 
+##  7   106  223   4.35
+##  8   108  244. 21.4 
+##  9   110  228.  9.37
+## 10   112  221. 14.7 
+## # … with 39 more rows</code></pre>
+<p><em>Your answer here</em>
+I then reran the same regression model with interaction with boot strap standard errors. When interpreting the coefficient estimates I found the estimate for age was for every increase in age by one year, I excepted blood pressure to go up by 0.48523 on average which was less originally. For cholesterol I found for every increase cholesterol, I excepted blood pressure to go up by 0.01827772 which was also less than before.</p>
+<pre class="r"><code>#Perform a logistic regression predicting a binary categorical variable 
+
+data2&lt;-cardio%&gt;%mutate(y=ifelse(class==&quot;Sick&quot;,1,0))
+head(data2)</code></pre>
+<pre><code>## # A tibble: 6 x 18
+## age sex cp bp chol fastbs Recg maxhr angina peak slope
+cvess thal class bp_c age_c
+## &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;lgl&gt; &lt;chr&gt; &lt;dbl&gt; &lt;lgl&gt;
+&lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 60 Male Asym… 130 206 FALSE Hyp 132 TRUE 2.4 Flat 2
+Rev Sick -1.62 5.63
+## 2 49 Male Abno… 130 266 FALSE Norm… 171 FALSE 0.6 Up 0
+Norm… Heal… -1.62 -5.37
+## 3 64 Male Angi… 110 211 FALSE Hyp 144 TRUE 1.8 Flat 0
+Norm… Heal… -21.6 9.63
+## 4 63 Male Asym… 130 254 FALSE Hyp 147 FALSE 1.4 Flat 1
+Rev Sick -1.62 8.63
+## 5 53 Male Asym… 140 203 TRUE Hyp 155 TRUE 3.1 Down 0 Rev
+Sick 8.38 -1.37
+## 6 58 Fema… Angi… 150 283 TRUE Hyp 162 FALSE 1 Up 0 Norm…
+Heal… 18.4 3.63
+## # … with 2 more variables: chol_c &lt;dbl&gt;, y &lt;dbl&gt;</code></pre>
+<pre class="r"><code>fit5&lt;-glm(y~maxhr+peak,data=data2,family=binomial(link=&quot;logit&quot;))
+library(lmtest)
+coeftest(fit5)</code></pre>
+<pre><code>##
+## z test of coefficients:
+##
+## Estimate Std. Error z value Pr(&gt;|z|)
+## (Intercept) 4.1300000 1.0455586 3.9500 7.814e-05 ***
+## maxhr -0.0338747 0.0067232 -5.0385 4.692e-07 ***
+## peak 0.7358198 0.1398959 5.2598 1.442e-07 ***
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code>#Confusion matrix
+class_diag &lt;- function(probs,truth){
+  
+  #CONFUSION MATRIX: CALCULATE ACCURACY, TPR, TNR, PPV
+  tab&lt;-table(factor(probs&gt;.5,levels=c(&quot;FALSE&quot;,&quot;TRUE&quot;)),truth)
+  acc=sum(diag(tab))/sum(tab)
+  sens=tab[2,2]/colSums(tab)[2]
+  spec=tab[1,1]/colSums(tab)[1]
+  ppv=tab[2,2]/rowSums(tab)[2]
+
+  if(is.numeric(truth)==FALSE &amp; is.logical(truth)==FALSE) truth&lt;-as.numeric(truth)-1
+  
+  #CALCULATE EXACT AUC
+  ord&lt;-order(probs, decreasing=TRUE)
+  probs &lt;- probs[ord]; truth &lt;- truth[ord]
+  
+  TPR=cumsum(truth)/max(1,sum(truth)) 
+  FPR=cumsum(!truth)/max(1,sum(!truth))
+  
+  dup&lt;-c(probs[-1]&gt;=probs[-length(probs)], FALSE)
+  TPR&lt;-c(0,TPR[!dup],1); FPR&lt;-c(0,FPR[!dup],1)
+  
+  n &lt;- length(TPR)
+  auc&lt;- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+
+  data.frame(acc,sens,spec,ppv,auc)
+}
+library(pROC)
+library(plotROC)
+probs1&lt;-predict(fit5, newdata=data2, type=&quot;response&quot;)
+truth1&lt;-data2$y 
+class_diag(probs1,truth1)</code></pre>
+<pre><code>##         acc      sens      spec       ppv       auc
+## 1 0.7392739 0.6449275 0.8181818 0.7478992 0.7943566</code></pre>
+<pre class="r"><code>table(prediction=as.numeric(probs1&gt;.5), truth1)</code></pre>
+<pre><code>##           truth1
+## prediction   0   1
+##          0 135  49
+##          1  30  89</code></pre>
+<pre class="r"><code>#Compute and discuss the Accuracy, Sensitivity (TPR), Specificity (TNR), and Recall (PPV) 
+
+class_diag(probs1, truth1)</code></pre>
+<pre><code>##         acc      sens      spec       ppv       auc
+## 1 0.7392739 0.6449275 0.8181818 0.7478992 0.7943566</code></pre>
+<pre class="r"><code>#ggplot, plot density of log-odds (logit) by your binary outcome variable 
+
+data2$logit&lt;-predict(fit5,type=&quot;link&quot;)
+
+data2%&gt;%ggplot(aes(logit,color=class,fill=class))+geom_density(alpha=.4)+
+  theme(legend.position=c(.85,.85))+geom_vline(xintercept=0)+xlab(&quot;predictor (logit)&quot;)</code></pre>
+<p><img src="/Project2-2-1_files/figure-html/unnamed-chunk-6-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#Generate an ROC curve (plot) 
+
+data2$probs1&lt;-predict(fit5, newdata=data2, type=&quot;response&quot;)
+
+sens&lt;-function(p,data=data2, y=y) mean(data2[data2$y==1,]$probs1&gt;p)
+spec&lt;-function(p,data=data2, y=y) mean(data2[data2$y==0,]$probs1&lt;p)
+sensitivity&lt;-sapply(seq(0,1,.01),sens,data2)
+specificity&lt;-sapply(seq(0,1,.01),spec,data2)
+ROC1&lt;-data.frame(sensitivity,specificity,cutoff=seq(0,1,.01))
+ROC1%&gt;%gather(key,rate,-cutoff)%&gt;%ggplot(aes(cutoff,rate,color=key))+geom_path()+ geom_vline(xintercept=c(.1,.5,.9),lty=2,color=&quot;gray50&quot;)</code></pre>
+<p><img src="/Project2-2-1_files/figure-html/unnamed-chunk-6-2.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ROC1$TPR&lt;-sensitivity
+ROC1$FPR&lt;-1-specificity
+ROC1%&gt;%ggplot(aes(FPR,TPR))+geom_path(size=1.5)+geom_segment(aes(x=0,y=0,xend=1,yend=1),lty=2)+scale_x_continuous(limits = c(0,1))</code></pre>
+<p><img src="/Project2-2-1_files/figure-html/unnamed-chunk-6-3.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#Perform 10-fold 
+k=10
+data &lt;- data2 %&gt;% sample_frac 
+folds &lt;- ntile(1:nrow(data),n=10) 
+diags&lt;-NULL
+for(i in 1:k){
+  train &lt;- data[folds!=i,]
+  test &lt;- data[folds==i,]
+  truth &lt;- test$y 
+  fit &lt;- glm(y~peak+maxhr, data=train, family=&quot;binomial&quot;)
+  probs &lt;- predict(fit, newdata=test, type=&quot;response&quot;)
+  diags&lt;-rbind(diags,class_diag(probs,truth))
+}
+summarize_all(diags,mean)</code></pre>
+<pre><code>##         acc      sens      spec       ppv       auc
+## 1 0.7290323 0.6398114 0.8069166 0.7342279 0.8019881</code></pre>
+<p><em>Your answer here</em>
+I performed a logistic regression predicting a binary categorical variable, class (Healthy vs. Sick), from two explanatory variables including peak and maximum heart rate. When interpreting the coefficients, I found for every increase in maximum heart rate, by 1 I except the log odds of being Sick to decrease 0.0338747. For every increase in peak by 1 I expect the log odds of being Sick to increase by 0.7358198.</p>
+<p>A confusion matrix was created (0= Healthy, 1=Sick). 30 individuals were incorrectly identified as sick and 89 were correctly identified as sick. A 135 individuals were correctly identified as healthy and 49 individuals were incorrectly identified as healthy. I computed the Accuracy (0.7392739), Sensitivity (0.6449275), Specificity (0.8181818), and Recall (0.7478992). The AUC computed was 0.7943566 which was fair.</p>
+<p>I plotted the plot density of log-odds by my binary variable, class. When interrupting the ROC curve if we were predicting perfectly, TPR would be 1 while FPR would be 0 for any cutoff except 100%. A ROC curve shows the tradeoff between sensitivity and specificity (any increase in sensitivity will be accompanied by a decrease in specificity) and the closer the curve follows the left-hand border and then the top border of the ROC space, the more accurate the test. Moreover, our ROC curve was not close to the left-hand border showing less accuracy. The slope of the tangent line at a cut point gives the likelihood ratio (LR) for that value of the test. My curve LR is at 0.00 meaning less accuracy.</p>
+<p>I ran a 10-fold CV and the average out-of-sample accuracy was 0.736129, the sensitivity was 0.649773, and the recall was 0.7437834.</p>
+<pre class="r"><code>#Lasso
+
+library(glmnet)
+library(magrittr)
+library(dplyr)
+y&lt;-as.matrix(cardio$class) 
+x&lt;-model.matrix(class~.,data=cardio)[,-1] 
+head(x)</code></pre>
+<pre><code>## age sexMale cpAngina cpAsymptomatic cpNoTang bp chol
+fastbsTRUE RecgHyp RecgNormal maxhr
+## 1 60 1 0 1 0 130 206 0 1 0 132
+## 2 49 1 0 0 0 130 266 0 0 1 171
+## 3 64 1 1 0 0 110 211 0 1 0 144
+## 4 63 1 0 1 0 130 254 0 1 0 147
+## 5 53 1 0 1 0 140 203 1 1 0 155
+## 6 58 0 1 0 0 150 283 1 1 0 162
+## anginaTRUE peak slopeFlat slopeUp cvess thalNormal
+thalRev bp_c age_c chol_c
+## 1 1 2.4 1 0 2 0 1 -1.623762 5.633663 -40.264026
+## 2 0 0.6 0 1 0 1 0 -1.623762 -5.366337 19.735974
+## 3 1 1.8 1 0 0 1 0 -21.623762 9.633663 -35.264026
+## 4 0 1.4 1 0 1 0 1 -1.623762 8.633663 7.735974
+## 5 1 3.1 0 0 0 0 1 8.376238 -1.366337 -43.264026
+## 6 0 1.0 0 1 0 1 0 18.376238 3.633663 36.735974</code></pre>
+<pre class="r"><code>x&lt;-scale(x)
+cv&lt;-cv.glmnet(x,y,family=&quot;binomial&quot;)
+
+lasso&lt;-glmnet(x,y,family=&quot;binomial&quot;,lambda=cv$lambda.1se) 
+coef(lasso)</code></pre>
+<pre><code>## 22 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+##                         s0
+## (Intercept)    -0.19561747
+## age             .         
+## sexMale         0.08655895
+## cpAngina        .         
+## cpAsymptomatic  0.45536829
+## cpNoTang        .         
+## bp              .         
+## chol            .         
+## fastbsTRUE      .         
+## RecgHyp         .         
+## RecgNormal      .         
+## maxhr          -0.11868374
+## anginaTRUE      0.19100118
+## peak            0.18875835
+## slopeFlat       0.01616737
+## slopeUp        -0.15680133
+## cvess           0.54265181
+## thalNormal     -0.34435845
+## thalRev         0.19151715
+## bp_c            .         
+## age_c           .         
+## chol_c          .</code></pre>
+<pre class="r"><code>#10 fold
+
+library(magrittr)
+library(dplyr)
+
+k=10
+cardio2 &lt;- cardio %&gt;% mutate(Male = ifelse(sex == &quot;Male&quot;,1, 0)) %&gt;% mutate(Asymptomatic = ifelse(cp == &quot;Asymptomatic&quot;, 1, 0))%&gt;% mutate(angt = ifelse(angina == &quot;TRUE&quot;, 1, 0))%&gt;% mutate(Flat = ifelse(slope == &quot;Flat&quot;, 1, 0)) %&gt;% mutate(Up = ifelse(slope == &quot;Up&quot;, 1, 0))%&gt;% mutate(Normal = ifelse(thal == &quot;Normal&quot;, 1, 0))%&gt;% mutate(Rev = ifelse(thal == &quot;Rev&quot;, 1, 0))%&gt;% select(class,Male, Asymptomatic, angt, Flat, Up, Normal, cvess, peak, maxhr)
+cardio2$y&lt;- ifelse(cardio$class==&quot;Sick&quot;,1, 0)
+
+data&lt;- cardio2%&gt;% sample_frac 
+folds&lt;-ntile(1:nrow(data), n=10) 
+
+diags&lt;-NULL
+for(i in 1:k){
+train&lt;-data[folds!=i,]
+test&lt;-data[folds==i,]
+truth&lt;-test$y
+fit&lt;-glm(y~Male+Asymptomatic+angt+Flat+Up+Normal+cvess+peak+maxhr,data= train, family= &quot;binomial&quot;)
+
+probs&lt;- predict(fit, newdata= test, type= &quot;response&quot;)
+
+diags&lt;-rbind(diags,class_diag(probs,truth))
+}
+
+summarize_all(diags,mean)</code></pre>
+<pre><code>##         acc      sens      spec       ppv       auc
+## 1 0.8517204 0.8035361 0.8881433 0.8612748 0.9129166</code></pre>
+<pre class="r"><code>diags%&gt;% summarize_all(mean)</code></pre>
+<pre><code>##         acc      sens      spec       ppv       auc
+## 1 0.8517204 0.8035361 0.8881433 0.8612748 0.9129166</code></pre>
+<p><em>Your answer here</em>
+For the LASSO regression the variable I choose to predict was class. The variables retained were sex (Male), chest pain type (Asymptomatic), maximum heart rate, angina (TRUE), peak, slope (FLAT and Up), colored vessels, and thal (Normal and Rev). Next I performed a 10 fold giving an accuracy of 0.8611828, sensitivity of 0.8051317, a Specificity of 0.9029355, and a Recall of 0.8916911. The AUC computed was 0.9136675 which was great! Which was a better AUC than previously!</p>
+<p>Key:
+Age= age
+Sex= sex
+Chest pain type= cp
+Blood pressure= bp
+Cholesterol= chol
+Fasting blood sugar= fastbs
+Resting ecg= Recg
+Maximum heart rate= maxhr
+Colored vessels= cvess
+Angina= angina
+Peak= peak
+Slope= slope
+Thal= thal
+Class= class</p>
+
+              <hr>
+              <div class="related-posts">
+                <h5>Related Posts</h5>
+                
+              </div>
+            </div>
+          </div>
+          <hr>
+        <div class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+        </div>
+      </div>
+      
+    </div>
+
+    
+    <footer>
+  <div id="footer">
+    <div class="container">
+      <p class="text-muted">&copy; All rights reserved. Powered by <a href="https://gohugo.io/">Hugo</a> and
+      <a href="http://www.github.com/nurlansu/hugo-sustain/">sustain</a> with ♥</p>
+    </div>
+  </div>
+</footer>
+<div class="footer"></div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="/js/docs.min.js"></script>
+<script src="/js/main.js"></script>
+
+<script src="/js/ie10-viewport-bug-workaround.js"></script>
+
+
+    
+  </body>
+</html>
