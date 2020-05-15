@@ -1,0 +1,24 @@
+---
+title: My new Post
+author: ''
+date: '2020-05-13'
+slug: my-new-post
+categories: []
+tags: []
+description: ''
+---
+
+```{python}
+import re 
+string1="We have to extract these numbers 12, 47, 48 The integer s numbers are also interesting: 189 2036 314\',\' is a separator , so please extract these numbers 125,789,1450 and also these 56 4,90456 We like to offer you 7890$ per month in order to complet e this task... we are joking"
+print(string1)
+re.findall('\d+',string1)
+
+
+```
+![](/blog/2020-05-13-my-new-post_files/Screen Shot 2020-05-15 at 12.58.56 PM.png)
+
+```{r}
+
+```
+

@@ -12,6 +12,15 @@
     
     
     <item>
+      <title>My new Post</title>
+      <link>/blog/my-new-post/</link>
+      <pubDate>Wed, 13 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/my-new-post/</guid>
+      <description>import re string1=&amp;quot;We have to extract these numbers 12, 47, 48 The integer s numbers are also interesting: 189 2036 314\&amp;#39;,\&amp;#39; is a separator , so please extract these numbers 125,789,1450 and also these 56 4,90456 We like to offer you 7890$ per month in order to complet e this task... we are joking&amp;quot; print(string1) ## We have to extract these numbers 12, 47, 48 The integer s numbers are also interesting: 189 2036 314&amp;#39;,&amp;#39; is a separator , so please extract these numbers 125,789,1450 and also these 56 4,90456 We like to offer you 7890$ per month in order to complet e this task.</description>
+    </item>
+    
+    <item>
       <title>Projects</title>
       <link>/projects/</link>
       <pubDate>Sun, 02 Oct 2016 22:55:05 -0400</pubDate>

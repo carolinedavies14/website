@@ -1,9 +1,13 @@
 {
-    "path" : "~/Desktop/website",
+    "path" : "~/Desktop/website/content/blog",
     "sortOrder" : [
         {
             "ascending" : true,
             "columnIndex" : 2
+        },
+        {
+            "ascending" : false,
+            "columnIndex" : 3
         }
     ]
 }

@@ -7,7 +7,7 @@
     <meta name="author" content="Hunter Davies (EID: hcd362)" />
     <meta name="description" content="Describe your website">
     <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
-    <title>Blogs</title>
+    <title>My new Post</title>
     <meta name="generator" content="Hugo 0.70.0" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="/css/main.css" />
@@ -24,6 +24,7 @@
 
   <body>
     <div id="wrap">
+
       
       <nav class="navbar navbar-default">
   <div class="container">
@@ -51,28 +52,67 @@
   </div>
 </nav>
 
+      
       <div class="container">
-        <h3>Archive</h3>
-          <div class="panel panel-default">
-            <div class="panel-body">
+        <div class="blog-post">
+          <h3>
+            <strong><a href="/blog/my-new-post/">My new Post</a></strong>
+          </h3>
+        </div>
+        <div class="blog-title">
+          <h4>
+          May 13, 2020
+            &nbsp;&nbsp;
             
-              <div class="row">
-                <div class="col-sm-4 col-md-4 col-lg-4">
-                  <h5 style="text-align: right">
-                    May 13, 2020
-                  </h5>
-                 </div>
-                 <div class="col-sm-8 col-md-8 col-lg-8">
-                   <h5 style="text-align: left">
-                    <strong><a href="/blog/my-new-post/">My new Post</a></strong>
-                  </h5>
-                </div>
+          </h4>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="blogpost">
+              
+
+
+<pre class="python"><code>import re 
+string1=&quot;We have to extract these numbers 12, 47, 48 The integer s numbers are also interesting: 189 2036 314\&#39;,\&#39; is a separator , so please extract these numbers 125,789,1450 and also these 56 4,90456 We like to offer you 7890$ per month in order to complet e this task... we are joking&quot;
+print(string1)</code></pre>
+<pre><code>## We have to extract these numbers 12, 47, 48 The integer s numbers are also interesting: 189 2036 314&#39;,&#39; is a separator , so please extract these numbers 125,789,1450 and also these 56 4,90456 We like to offer you 7890$ per month in order to complet e this task... we are joking</code></pre>
+<pre class="python"><code>re.findall(&#39;\d+&#39;,string1)
+</code></pre>
+<pre><code>## [&#39;12&#39;, &#39;47&#39;, &#39;48&#39;, &#39;189&#39;, &#39;2036&#39;, &#39;314&#39;, &#39;125&#39;, &#39;789&#39;, &#39;1450&#39;, &#39;56&#39;, &#39;4&#39;, &#39;90456&#39;, &#39;7890&#39;]</code></pre>
+<p><img src="/blog/2020-05-13-my-new-post_files/Screen%20Shot%202020-05-15%20at%2012.58.56%20PM.png" /></p>
+
+              <hr>
+              <div class="related-posts">
+                <h5>Related Posts</h5>
+                
               </div>
-            
             </div>
           </div>
+          <hr>
+        <div class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+        </div>
       </div>
+      
     </div>
+
     
     <footer>
   <div id="footer">
@@ -94,5 +134,6 @@
 <script src="/js/ie10-viewport-bug-workaround.js"></script>
 
 
+    
   </body>
 </html>
